@@ -1,0 +1,281 @@
+mysql> #Question: The percentage of invoice that are COD.
+mysql> CREATE INDEX payment_method_idx ON sale_details(payment_method(2));
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SELECT sale_details_sk, 
+    -> (SELECT COUNT(payment_method) 
+    -> FROM sale_details 
+    -> WHERE payment_method='cod')*100/(COUNT(payment_method)) AS COD_percentage 
+    -> FROM sale_details;
++-----------------+----------------+
+| sale_details_sk | COD_percentage |
++-----------------+----------------+
+|               1 |        38.0952 |
++-----------------+----------------+
+1 row in set (0.00 sec)
+
+mysql> #Question: The sales by supplier state to customer state. This would be useful to see if suppliers should ship directly to customers
+mysql> CREATE INDEX state_idx ON customer(state(2));
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SELECT sales_fact.amount AS Sales, 
+    -> customer.state AS 'Customer State', 
+    -> supplier.state AS 'Supplier State' 
+    -> FROM customer 
+    -> JOIN sales_fact ON customer.customersk=sales_fact.customersk_fk 
+    -> JOIN supplier ON supplier.suppliersk=sales_fact.suppliersk_fk 
+    -> GROUP BY 2,3;
++--------+----------------+----------------+
+| Sales  | Customer State | Supplier State |
++--------+----------------+----------------+
+| 320.00 | NULL           | NULL           |
+| 344.00 | AK             | FL             |
+| 203.00 | AK             | KS             |
+| 361.00 | AK             | KY             |
+| 113.00 | AK             | MI             |
+| 191.00 | AK             | MN             |
+| 301.00 | AK             | PA             |
+| 161.00 | AK             | VA             |
+| 133.00 | AK             | WA             |
+| 317.00 | AZ             | FL             |
+| 167.00 | AZ             | KS             |
+| 257.00 | AZ             | KY             |
+| 162.00 | AZ             | MI             |
+| 106.00 | AZ             | MN             |
+| 219.00 | AZ             | PA             |
+| 379.00 | AZ             | VA             |
+| 376.00 | AZ             | WA             |
+| 346.00 | CA             | FL             |
+| 113.00 | CA             | KS             |
+| 110.00 | CA             | KY             |
+| 381.00 | CA             | MI             |
+| 322.00 | CA             | MN             |
+| 148.00 | CA             | PA             |
+| 206.00 | CA             | VA             |
+| 290.00 | CA             | WA             |
+| 190.00 | DC             | FL             |
+| 350.00 | DC             | KS             |
+| 167.00 | DC             | KY             |
+| 351.00 | DC             | MI             |
+| 250.00 | DC             | MN             |
+| 161.00 | DC             | PA             |
+| 134.00 | DC             | VA             |
+| 125.00 | DC             | WA             |
+| 129.00 | DE             | FL             |
+| 240.00 | DE             | KS             |
+| 102.00 | DE             | KY             |
+| 351.00 | DE             | MI             |
+| 399.00 | DE             | MN             |
+| 307.00 | DE             | PA             |
+| 191.00 | DE             | VA             |
+| 205.00 | DE             | WA             |
+| 228.00 | FL             | FL             |
+| 327.00 | FL             | KS             |
+| 397.00 | FL             | KY             |
+| 185.00 | FL             | MI             |
+| 335.00 | FL             | MN             |
+| 382.00 | FL             | PA             |
+| 387.00 | FL             | VA             |
+| 261.00 | FL             | WA             |
+| 361.00 | GA             | FL             |
+| 259.00 | GA             | KS             |
+| 357.00 | GA             | KY             |
+| 251.00 | GA             | MI             |
+| 115.00 | GA             | MN             |
+| 361.00 | GA             | PA             |
+| 174.00 | GA             | VA             |
+| 267.00 | GA             | WA             |
+| 265.00 | HI             | FL             |
+| 246.00 | HI             | KS             |
+| 363.00 | HI             | KY             |
+| 155.00 | HI             | MI             |
+| 211.00 | HI             | MN             |
+| 399.00 | HI             | PA             |
+| 385.00 | HI             | VA             |
+| 177.00 | HI             | WA             |
+| 330.00 | KY             | FL             |
+| 163.00 | KY             | KS             |
+| 226.00 | KY             | KY             |
+| 394.00 | KY             | MI             |
+| 265.00 | KY             | MN             |
+| 321.00 | KY             | PA             |
+| 210.00 | KY             | VA             |
+| 105.00 | KY             | WA             |
+| 182.00 | LA             | FL             |
+| 379.00 | LA             | KS             |
+| 194.00 | LA             | KY             |
+| 338.00 | LA             | MI             |
+| 181.00 | LA             | MN             |
+| 202.00 | LA             | PA             |
+| 200.00 | LA             | VA             |
+| 294.00 | LA             | WA             |
+| 128.00 | ME             | FL             |
+| 135.00 | ME             | KS             |
+| 259.00 | ME             | KY             |
+| 224.00 | ME             | MI             |
+| 316.00 | ME             | MN             |
+| 340.00 | ME             | PA             |
+| 357.00 | ME             | VA             |
+| 245.00 | ME             | WA             |
+| 358.00 | MS             | FL             |
+| 157.00 | MS             | KS             |
+| 309.00 | MS             | KY             |
+| 162.00 | MS             | MI             |
+| 103.00 | MS             | MN             |
+| 349.00 | MS             | PA             |
+| 176.00 | MS             | VA             |
+| 176.00 | MS             | WA             |
+| 168.00 | NC             | FL             |
+| 178.00 | NC             | KS             |
+| 283.00 | NC             | KY             |
+| 129.00 | NC             | MI             |
+| 369.00 | NC             | MN             |
+| 346.00 | NC             | PA             |
+| 398.00 | NC             | VA             |
+| 117.00 | NC             | WA             |
+| 361.00 | ND             | FL             |
+| 292.00 | ND             | KS             |
+| 328.00 | ND             | KY             |
+| 335.00 | ND             | MI             |
+| 348.00 | ND             | MN             |
+| 131.00 | ND             | PA             |
+| 126.00 | ND             | VA             |
+| 308.00 | ND             | WA             |
+| 286.00 | NE             | FL             |
+| 360.00 | NE             | KS             |
+| 346.00 | NE             | KY             |
+| 123.00 | NE             | MI             |
+| 334.00 | NE             | MN             |
+| 123.00 | NE             | PA             |
+| 308.00 | NE             | VA             |
+| 297.00 | NE             | WA             |
+| 126.00 | NH             | FL             |
+| 216.00 | NH             | KS             |
+| 117.00 | NH             | KY             |
+| 126.00 | NH             | MI             |
+| 389.00 | NH             | MN             |
+| 364.00 | NH             | PA             |
+| 173.00 | NH             | VA             |
+| 224.00 | NH             | WA             |
+| 173.00 | NM             | FL             |
+| 261.00 | NM             | KS             |
+| 353.00 | NM             | KY             |
+| 232.00 | NM             | MI             |
+| 294.00 | NM             | MN             |
+| 104.00 | NM             | PA             |
+| 332.00 | NM             | VA             |
+| 241.00 | NM             | WA             |
+| 307.00 | NY             | FL             |
+| 180.00 | NY             | KS             |
+| 231.00 | NY             | KY             |
+| 369.00 | NY             | MI             |
+| 338.00 | NY             | MN             |
+| 265.00 | NY             | PA             |
+| 332.00 | NY             | VA             |
+| 355.00 | NY             | WA             |
+| 311.00 | PA             | FL             |
+| 127.00 | PA             | KS             |
+| 158.00 | PA             | KY             |
+| 381.00 | PA             | MI             |
+| 150.00 | PA             | MN             |
+| 271.00 | PA             | PA             |
+| 218.00 | PA             | VA             |
+| 307.00 | PA             | WA             |
+| 141.00 | RI             | FL             |
+| 219.00 | RI             | KS             |
+| 339.00 | RI             | KY             |
+| 121.00 | RI             | MI             |
+| 143.00 | RI             | MN             |
+| 277.00 | RI             | PA             |
+| 281.00 | RI             | VA             |
+| 323.00 | RI             | WA             |
+| 145.00 | SD             | FL             |
+| 298.00 | SD             | KS             |
+| 201.00 | SD             | KY             |
+| 361.00 | SD             | MI             |
+| 142.00 | SD             | MN             |
+| 357.00 | SD             | PA             |
+| 210.00 | SD             | VA             |
+| 335.00 | SD             | WA             |
+| 128.00 | TX             | FL             |
+| 115.00 | TX             | KS             |
+| 104.00 | TX             | KY             |
+| 124.00 | TX             | MI             |
+| 282.00 | TX             | MN             |
+| 337.00 | TX             | PA             |
+| 126.00 | TX             | VA             |
+| 340.00 | TX             | WA             |
+| 374.00 | UT             | FL             |
+| 264.00 | UT             | KS             |
+| 363.00 | UT             | KY             |
+| 249.00 | UT             | MI             |
+| 236.00 | UT             | MN             |
+| 320.00 | UT             | PA             |
+| 203.00 | UT             | VA             |
+| 215.00 | UT             | WA             |
+| 261.00 | VT             | FL             |
+| 274.00 | VT             | KS             |
+| 163.00 | VT             | KY             |
+| 100.00 | VT             | MI             |
+| 177.00 | VT             | MN             |
+| 326.00 | VT             | PA             |
+| 224.00 | VT             | VA             |
+| 184.00 | VT             | WA             |
+| 215.00 | WA             | FL             |
+| 341.00 | WA             | KS             |
+| 213.00 | WA             | KY             |
+| 397.00 | WA             | MI             |
+| 382.00 | WA             | MN             |
+| 246.00 | WA             | PA             |
+| 362.00 | WA             | VA             |
+| 242.00 | WA             | WA             |
+| 156.00 | WV             | FL             |
+| 162.00 | WV             | KS             |
+| 268.00 | WV             | KY             |
+| 167.00 | WV             | MI             |
+| 391.00 | WV             | MN             |
+| 322.00 | WV             | PA             |
+| 244.00 | WV             | VA             |
+| 392.00 | WV             | WA             |
+| 136.00 | WY             | FL             |
+| 328.00 | WY             | KS             |
+| 274.00 | WY             | KY             |
+| 365.00 | WY             | MI             |
+| 138.00 | WY             | MN             |
+| 238.00 | WY             | PA             |
+| 290.00 | WY             | VA             |
+| 120.00 | WY             | WA             |
++--------+----------------+----------------+
+217 rows in set (0.12 sec)
+
+mysql> #Question: Show the total cost of products for each supplier.
+mysql> CREATE INDEX cost_idx ON supplier(name(4));
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SELECT supplier.name AS 'Supplier Name', 
+    -> product.name AS 'Product Name', 
+    -> SUM(price1) AS 'Total cost of products' 
+    -> FROM supplier 
+    -> JOIN sales_fact ON supplier.supplierSK = sales_fact.supplierSK_FK 
+    -> JOIN product ON product.productSK = sales_fact.supplierSK_FK 
+    -> WHERE supplier.name IS NOT null 
+    -> GROUP BY 1;
++-------------------------------+---------------------------------+------------------------+
+| Supplier Name                 | Product Name                    | Total cost of products |
++-------------------------------+---------------------------------+------------------------+
+| Afg Industries Inc.           | Bandage Manufacturing Equip     |             5254036.49 |
+| American General Ventures Inc | Chalmers Polishing Equipment    |             6932745.99 |
+| Black Hills Corporation       | Defeated Tray Supplies          |             5213020.10 |
+| Dollar General Corporation    | Enhanced Covers                 |             2756478.59 |
+| Fedders Corporation           | Just Paper Supplies             |             3075449.91 |
+| First Bancshares Inc Mo       | Pervasively Manufacturing Equip |             6471765.29 |
+| Immunex Corporation           | Significants Freezing Chemicals |             1108081.61 |
+| Saurer Gruppe Holding Ag      | Suing Manufacturing Equip       |             1007714.40 |
+| Sinclair Broadcast Group Inc. | Tailor Jacks                    |             3830147.41 |
++-------------------------------+---------------------------------+------------------------+
+9 rows in set (0.23 sec)
+
+mysql> notee
